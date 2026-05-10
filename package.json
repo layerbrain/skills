@@ -1,0 +1,48 @@
+{
+  "name": "@layerbrain/skills",
+  "version": "0.1.0",
+  "description": "Layerbrain skills for AI coding agents. Install once, any agent (Claude Code, Codex, Cursor, Cline, Windsurf) learns to drive the `brain` CLI like a devops engineer drives AWS.",
+  "type": "module",
+  "bin": {
+    "layerbrain-skills": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "skills",
+    "references",
+    ".claude-plugin",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "layerbrain",
+    "brain",
+    "skills",
+    "claude-code",
+    "codex",
+    "cursor",
+    "cline",
+    "windsurf",
+    "ai-agent",
+    "devops"
+  ],
+  "homepage": "https://layerbrain.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/layerbrain/skills.git"
+  },
+  "license": "MIT",
+  "author": "Layerbrain",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  }
+}

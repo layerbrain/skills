@@ -61,21 +61,6 @@ Skills never authenticate the agent — that's a human-only step. Run `brain log
 
 Every skill preamble tells the agent to run `brain whoami` first and stop if it fails.
 
-## Releasing (maintainers)
-
-Releases publish to npm on tag push (`v*`). See `.github/workflows/release.yml`.
-
-```bash
-npm version patch
-git push --follow-tags
-```
-
-### Required secrets
-
-| Secret | Purpose |
-|---|---|
-| `NPM_TOKEN` | npm Automation token with publish rights on the `@layerbrain` scope |
-
 ## License
 
 MIT

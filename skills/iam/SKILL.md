@@ -1,9 +1,9 @@
 ---
-name: brain-iam
+name: iam
 description: Use when the user wants to manage Layerbrain identity and access — accounts, API keys, organizations, or memberships. Requires the `brain` CLI.
 ---
 
-# Brain — IAM (accounts, API keys, organizations, memberships)
+# Layerbrain IAM
 
 Four resources that together describe **who can do what** on Layerbrain:
 
@@ -31,8 +31,8 @@ Run `brain whoami`. If it errors, tell the user to run `brain login` (or set `LA
 |---|---|
 | List | `brain api-keys list --output json` |
 | Get | `brain api-keys get <ID> --output json` |
-| Create | `brain api-keys create --data-file ./key.json --output json` |
-| Update | `brain api-keys update <ID> --data-file ./key.json` |
+| Create | `brain api-keys create --kind <kind> --name <name> --output json` |
+| Update | `brain api-keys update <ID> --name <name> --note <note>` |
 | Rotate | `brain api-keys rotate <ID>` |
 | Delete | `brain api-keys delete <ID>` |
 
@@ -42,8 +42,8 @@ Run `brain whoami`. If it errors, tell the user to run `brain login` (or set `LA
 |---|---|
 | List | `brain organizations list --output json` |
 | Get | `brain organizations get <ID> --output json` |
-| Create | `brain organizations create --data-file ./org.json --output json` |
-| Update | `brain organizations update <ID> --data-file ./org.json` |
+| Create | `brain organizations create --name <name> --output json` |
+| Update | `brain organizations update <ID> --name <name>` |
 | Delete | `brain organizations delete <ID>` |
 
 ## Memberships
@@ -52,7 +52,7 @@ Run `brain whoami`. If it errors, tell the user to run `brain login` (or set `LA
 |---|---|
 | List | `brain memberships list --output json` |
 | Get | `brain memberships get <ID> --output json` |
-| Create | `brain memberships create --data-file ./membership.json --output json` |
+| Create | `brain memberships create --organization <ORG_ID> --emails <email1,email2> --role <role> --output json` |
 
 ## Rules
 

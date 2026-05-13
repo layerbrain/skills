@@ -28,10 +28,10 @@ Default: autodetect from cwd. Falls back to claude-code (project) if nothing fou
 
 Examples:
   npx @layerbrain/skills install                                # autodetect, install all skills
-  npx @layerbrain/skills install brain-machines brain-storage   # subset
+  npx @layerbrain/skills install machines storage               # subset
   npx @layerbrain/skills install --agent factory-droid          # write AGENTS.md
   npx @layerbrain/skills install --agent claude-code --scope user
-  npx @layerbrain/skills remove brain-billing --agent codex
+  npx @layerbrain/skills remove billing --agent codex
 `;
 
 type Args = {

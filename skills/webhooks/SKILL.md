@@ -1,9 +1,9 @@
 ---
-name: brain-webhooks
+name: webhooks
 description: Use when the user wants to create, list, update, delete, or rotate the secret of a Layerbrain webhook. Requires the `brain` CLI.
 ---
 
-# Brain — webhooks
+# Layerbrain webhooks
 
 Webhooks send signed HTTP POSTs from Layerbrain to a URL the user controls when events happen (machine state changes, snapshot completions, etc).
 
@@ -17,8 +17,11 @@ Run `brain whoami`. If it errors, tell the user to run `brain login` (or set `LA
 |---|---|
 | List webhooks | `brain webhooks list --output json` |
 | Get webhook | `brain webhooks get <ID> --output json` |
-| Create webhook | `brain webhooks create --data-file ./webhook.json --output json` |
-| Update webhook | `brain webhooks update <ID> --data-file ./webhook.json` |
+| Create webhook | `brain webhooks create --url <url> --enabled-events <event1,event2> --output json` |
+| Update webhook | `brain webhooks update <ID> --url <url> --status active` |
+| Get signing secret | `brain webhooks signing-secret <ID> --output json` |
+| Test webhook | `brain webhooks test <ID>` |
+| List deliveries | `brain webhooks deliveries <ID> --output json` |
 | Rotate signing secret | `brain webhooks rotate-secret <ID> --output json` |
 | Delete webhook | `brain webhooks delete <ID>` |
 

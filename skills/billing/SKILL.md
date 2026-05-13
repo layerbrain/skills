@@ -1,5 +1,5 @@
 ---
-name: brain-billing
+name: billing
 description: Use when the user wants to view Layerbrain billing — statements (invoices / usage) or subscriptions (plans). Requires the `brain` CLI.
 ---
 

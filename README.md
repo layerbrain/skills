@@ -28,13 +28,14 @@ Pass `--agent <id>` to force one, or let autodetect handle it.
 
 | Skill | What the agent learns |
 |---|---|
-| `brain-machines` | Provision VMs, snapshot, restore, SSH, pick regions |
-| `brain-storage` | Manage backends, buckets, presigned URLs |
-| `brain-networks` | Networks, ACL rules, traffic flow debugging |
-| `brain-secrets` | Create, rotate, reveal secrets |
-| `brain-iam` | Accounts, API keys, organizations, memberships |
-| `brain-webhooks` | Create, rotate signing secrets, manage webhooks |
-| `brain-billing` | Read statements and subscriptions |
+| `machines` | Provision VMs, SSH, connect, extend TTLs, pick regions |
+| `storage` | Manage buckets and presigned URLs |
+| `networks` | Networks, ACL rules, traffic flow debugging |
+| `secrets` | Create, rotate, reveal secrets |
+| `events` | List events, inspect event types, listen live |
+| `iam` | Accounts, API keys, organizations, memberships |
+| `webhooks` | Create, rotate signing secrets, manage webhooks |
+| `billing` | Read statements and subscriptions |
 
 Plus a shared `references/auth.md` codifying the credential model (`~/.layerbrain/credentials.toml` or `LAYERBRAIN_API_KEY`).
 
@@ -42,11 +43,11 @@ Plus a shared `references/auth.md` codifying the credential model (`~/.layerbrai
 
 ```bash
 npx @layerbrain/skills install                                # all skills, autodetect target
-npx @layerbrain/skills install brain-machines brain-storage   # subset
+npx @layerbrain/skills install machines storage               # subset
 npx @layerbrain/skills install --agent claude-code            # force one target
 npx @layerbrain/skills install --agent claude-code --scope user
 npx @layerbrain/skills list                                   # what's installed
-npx @layerbrain/skills remove brain-billing                   # remove one
+npx @layerbrain/skills remove billing                         # remove one
 npx @layerbrain/skills detect                                 # show detected targets
 npx @layerbrain/skills agents                                 # list every supported target ID
 npx @layerbrain/skills skills                                 # list available skills

@@ -1,5 +1,5 @@
 ---
-name: brain-networks
+name: networks
 description: Use when the user wants to inspect or manage Layerbrain networks, network rules (firewall / ACL), or network flows (observed traffic). Requires the `brain` CLI.
 ---
 

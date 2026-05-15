@@ -68,9 +68,14 @@ brain machines create \
   --output json
 ```
 
-The machine must run TLS itself. For direct IPv6 HTTPS, use an ACME CA/profile that issues IP address certificates, such as Let's Encrypt's `shortlived` profile. HTTP-01 and TLS-ALPN-01 are the useful challenges for IP identifiers, so ports 80 and 443 must be public and reachable.
+The machine must run TLS itself. For direct IPv6 HTTPS, use an ACME CA/profile that issues IP address certificates, such as Let's Encrypt's `shortlived` profile. The tested path is:
 
-If using Caddy for an IPv6 literal, configure it to serve the IP certificate when clients omit SNI. In practice that means setting Caddy's `default_sni` to the machine IPv6 address and using an ACME issuer with the `shortlived` profile. Without `default_sni`, TLS clients that do not send SNI for IP addresses can fail the handshake even if the certificate exists.
+1. Stop anything using port 80.
+2. Issue the certificate with acme.sh standalone HTTP-01, using `--listen-v6`, `--cert-profile shortlived`, and `-d <machine-ipv6>`.
+3. Mount the issued `fullchain.pem` and `key.pem` into the reverse proxy.
+4. Serve that certificate as the default `:443` certificate, because many TLS clients omit SNI for IP addresses.
+
+Caddy's automatic ACME flow can be unreliable for IPv6 literals because HTTP-01 requests use bracketed IPv6 hosts and TLS-ALPN-01 validation can reject the generated challenge certificate. Prefer issuing the IP certificate first, then run Caddy with a static `tls /certs/fullchain.pem /certs/key.pem` block on `:443`.
 
 ## Timeout behavior
 

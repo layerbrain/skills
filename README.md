@@ -28,7 +28,7 @@ Pass `--agent <id>` to force one, or let autodetect handle it.
 
 | Skill | What the agent learns |
 |---|---|
-| `machines` | Provision VMs, SSH, connect, extend TTLs, pick regions |
+| `machines` | Provision VMs, SSH, connect, set idle timeouts, expose ports, pick regions |
 | `storage` | Manage buckets and presigned URLs |
 | `networks` | Networks, ACL rules, traffic flow debugging |
 | `secrets` | Create, rotate, reveal secrets |

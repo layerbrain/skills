@@ -29,6 +29,7 @@ Pass `--agent <id>` to force one, or let autodetect handle it.
 | Skill | What the agent learns |
 |---|---|
 | `machines` | Provision VMs, SSH, connect, set idle timeouts, expose ports, pick regions |
+| `enabling-https` | Enable HTTPS on a machine IPv6 address with Let's Encrypt and an in-machine TLS server |
 | `storage` | Manage buckets and presigned URLs |
 | `networks` | Networks, ACL rules, traffic flow debugging |
 | `secrets` | Create, rotate, reveal secrets |

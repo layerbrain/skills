@@ -9,7 +9,7 @@
       "name": "layerbrain",
       "source": ".",
       "description": "Layerbrain skills: drive `brain` CLI to manage compute, machines, storage, networks, secrets, IAM, webhooks and billing from any Claude Code session.",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "homepage": "https://layerbrain.com"
     }
   ]

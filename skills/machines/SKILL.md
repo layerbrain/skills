@@ -54,6 +54,15 @@ brain machines create \
 
 After create, run the web server inside the machine with `brain machines exec`. Bind to `::` or `0.0.0.0` on the same port.
 
+For a public web app, create the machine with the public ports it will need, start the app inside the machine, then verify from outside Layerbrain. Public port rules open the host firewall only; the app or reverse proxy still has to listen inside the machine.
+
+Common web app flow:
+
+1. Create with `--ports 80` for HTTP, or `--ports 80,443` for HTTPS.
+2. Copy or generate app files inside the machine.
+3. Start the app, web server, or reverse proxy with a listener on `::` or `0.0.0.0`.
+4. Verify externally with `curl http://[<machine-ipv6>]:<port>` or `curl https://[<machine-ipv6>]`.
+
 For HTTPS on the machine IPv6 address, expose both HTTP-01 and HTTPS ports:
 
 ```bash
@@ -68,14 +77,16 @@ brain machines create \
   --output json
 ```
 
-The machine must run TLS itself. For direct IPv6 HTTPS, use an ACME CA/profile that issues IP address certificates, such as Let's Encrypt's `shortlived` profile. The tested path is:
+The machine must run TLS itself. For direct IPv6 HTTPS, use a CA/profile that issues IP address certificates. Domain certificates do not validate for `https://[<ipv6>]` unless the certificate includes that IP address.
 
-1. Stop anything using port 80.
-2. Issue the certificate with acme.sh standalone HTTP-01, using `--listen-v6`, `--cert-profile shortlived`, and `-d <machine-ipv6>`.
-3. Mount the issued `fullchain.pem` and `key.pem` into the reverse proxy.
-4. Serve that certificate as the default `:443` certificate, because many TLS clients omit SNI for IP addresses.
+Generic IPv6 HTTPS flow:
 
-Caddy's automatic ACME flow can be unreliable for IPv6 literals because HTTP-01 requests use bracketed IPv6 hosts and TLS-ALPN-01 validation can reject the generated challenge certificate. Prefer issuing the IP certificate first, then run Caddy with a static `tls /certs/fullchain.pem /certs/key.pem` block on `:443`.
+1. Stop anything already using port 80.
+2. Use any ACME client that supports IP address certificates and IPv6 HTTP-01 validation.
+3. Request the certificate for the machine IPv6 literal. With Let's Encrypt IP certificates, use the `shortlived` profile; one working ACME client pattern is standalone HTTP-01 over IPv6 with `--listen-v6`, `--cert-profile shortlived`, and `-d <machine-ipv6>`.
+4. Install `fullchain.pem` and `key.pem` into any HTTPS-capable server: nginx, Apache, Envoy, HAProxy, or the application's own TLS listener.
+5. Configure the server to present the IP certificate as the default certificate for `:443`, because many clients omit SNI for IP-literal URLs.
+6. Verify from outside Layerbrain with `curl -v https://[<machine-ipv6>]`.
 
 ## Timeout behavior
 

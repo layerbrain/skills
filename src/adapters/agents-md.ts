@@ -9,7 +9,7 @@ function targetFile(ctx: InstallContext): string {
 }
 
 function renderBlock(skills: Skill[]): string {
-  const header = `## Layerbrain skills\n\nThe \`brain\` CLI manages Layerbrain (compute, machines, storage, networks, secrets, IAM, webhooks, billing). When the user's intent matches one of the skills below, follow that skill's rules.\n\nInstall once: \`npm i -g @layerbrain/brain && brain login\`. Auth lives at \`~/.layerbrain/credentials.toml\` or \`LAYERBRAIN_API_KEY\`.\n\n### Skills\n`;
+  const header = `## Layerbrain skills\n\nThe \`brain\` CLI manages Layerbrain (compute, machines, storage, networks, secrets, IAM, webhooks, billing). When the user's intent matches one of the skills below, follow that skill's rules.\n\nCLI resolution: first run \`command -v brain\`. If it exists, use \`brain\` exactly as found on PATH. If it is missing, install with \`curl -fsSL https://layerbrain.com/install.sh | sh\`, then ask the human to run \`brain login\`. Never use a local Layerbrain source checkout as the CLI; do not \`cd\` into \`layerbrain/brain\`, do not run \`npm link\`, and do not call \`node dist/cli.js\`. Auth lives at \`~/.layerbrain/credentials.toml\` or \`LAYERBRAIN_API_KEY\`.\n\n### Skills\n`;
   const list = skills.map((s) => `- **${s.name}** — ${s.description}`).join("\n");
   const tail = `\n\n### Full skill definitions\n\n${skills
     .map((s) => `<details><summary>${s.name}</summary>\n\n${s.body}\n\n</details>`)

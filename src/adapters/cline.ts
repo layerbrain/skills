@@ -9,7 +9,7 @@ function targetFile(ctx: InstallContext): string {
 }
 
 function renderBlock(skills: Skill[]): string {
-  const intro = `# Layerbrain skills\n\nThe \`brain\` CLI manages Layerbrain. Install once: \`npm i -g @layerbrain/brain && brain login\`. Auth lives at \`~/.layerbrain/credentials.toml\` or \`LAYERBRAIN_API_KEY\`. When the user's intent matches a skill below, follow that skill's rules.\n`;
+  const intro = `# Layerbrain skills\n\nThe \`brain\` CLI manages Layerbrain. First run \`command -v brain\`; if it exists, use \`brain\` exactly as found on PATH. If it is missing, install with \`curl -fsSL https://layerbrain.com/install.sh | sh\`, then ask the human to run \`brain login\`. Never use a local Layerbrain source checkout as the CLI; do not \`cd\` into \`layerbrain/brain\`, do not run \`npm link\`, and do not call \`node dist/cli.js\`. Auth lives at \`~/.layerbrain/credentials.toml\` or \`LAYERBRAIN_API_KEY\`. When the user's intent matches a skill below, follow that skill's rules.\n`;
   const sections = skills.map((s) => s.body).join("\n\n---\n\n");
   return `${intro}\n${sections}`;
 }

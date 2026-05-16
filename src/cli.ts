@@ -130,7 +130,7 @@ function checkAuth(): void {
     console.log("✓ brain CLI authenticated");
   } catch {
     console.log("⚠ brain CLI is not authenticated (or not installed)");
-    console.log("  install: npm i -g @layerbrain/brain");
+    console.log("  install: curl -fsSL https://layerbrain.com/install.sh | sh");
     console.log("  login:   brain login   (or set LAYERBRAIN_API_KEY)");
   }
 }

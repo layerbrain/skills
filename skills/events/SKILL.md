@@ -18,6 +18,7 @@ Run `brain whoami`. If it errors, tell the user to run `brain login` or set `LAY
 | List events | `brain events list --limit 50 --output json` |
 | Get event | `brain events get <ID> --output json` |
 | List event types | `brain events types --output json` |
+| Trigger fixture event | `brain trigger machine.started --output json` |
 | Listen live | `brain listen --events <event1,event2>` |
 
 ## Rules

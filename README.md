@@ -1,11 +1,11 @@
 # @layerbrain/skills
 
-Skills that teach coding agents how to drive the [`brain`](https://www.npmjs.com/package/@layerbrain/brain) CLI.
+Skills that teach coding agents how to drive the [`brain`](https://layerbrain.com/docs/getting-started/installation) CLI.
 
 ## Quick start
 
 ```bash
-npm i -g @layerbrain/brain
+curl -fsSL https://layerbrain.com/install.sh | sh
 brain login
 
 npx @layerbrain/skills install
@@ -60,7 +60,7 @@ Append-style targets (`AGENTS.md`, `.clinerules`) use `<!-- @layerbrain/skills:s
 
 Skills never authenticate the agent — that's a human-only step. Run `brain login` once. Credentials live at `~/.layerbrain/credentials.toml`. For headless / CI use, set `LAYERBRAIN_API_KEY`.
 
-Every skill preamble tells the agent to run `brain whoami` first and stop if it fails.
+Every skill preamble tells the agent to resolve `brain` from PATH, run `brain whoami`, and stop if either step fails.
 
 ## License
 

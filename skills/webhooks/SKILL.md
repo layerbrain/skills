@@ -9,7 +9,7 @@ Webhooks send signed HTTP POSTs from Layerbrain to a URL the user controls when 
 
 ## Preflight
 
-Run `brain whoami`. If it errors, tell the user to run `brain login` (or set `LAYERBRAIN_API_KEY`). See `references/auth.md`.
+Run `command -v brain`; if it exists, use `brain` exactly as found on PATH. Then run `brain whoami`. If either command errors, follow `references/auth.md`. Never use a local `layerbrain/brain` checkout as the CLI.
 
 ## Operations
 

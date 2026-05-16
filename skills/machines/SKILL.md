@@ -77,13 +77,13 @@ brain machines create \
   --output json
 ```
 
-The machine must run TLS itself. For direct IPv6 HTTPS, use a CA/profile that issues IP address certificates. Domain certificates do not validate for `https://[<ipv6>]` unless the certificate includes that IP address.
+The machine must run TLS itself. For direct IPv6 HTTPS, use a Let's Encrypt IP certificate for the machine IPv6 literal. Domain certificates do not validate for `https://[<ipv6>]` unless the certificate includes that IP address.
 
 Generic IPv6 HTTPS flow:
 
 1. Stop anything already using port 80.
-2. Use any ACME client that supports IP address certificates and IPv6 HTTP-01 validation.
-3. Request the certificate for the machine IPv6 literal. With Let's Encrypt IP certificates, use the `shortlived` profile; one working ACME client pattern is standalone HTTP-01 over IPv6 with `--listen-v6`, `--cert-profile shortlived`, and `-d <machine-ipv6>`.
+2. Use any ACME client that supports Let's Encrypt IP certificates and IPv6 HTTP-01 validation.
+3. Request the certificate for the machine IPv6 literal with Let's Encrypt's `shortlived` profile; one working ACME client pattern is standalone HTTP-01 over IPv6 with `--listen-v6`, `--cert-profile shortlived`, and `-d <machine-ipv6>`.
 4. Install `fullchain.pem` and `key.pem` into any HTTPS-capable server: nginx, Apache, Envoy, HAProxy, or the application's own TLS listener.
 5. Configure the server to present the IP certificate as the default certificate for `:443`, because many clients omit SNI for IP-literal URLs.
 6. Verify from outside Layerbrain with `curl -v https://[<machine-ipv6>]`.

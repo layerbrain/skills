@@ -77,16 +77,18 @@ brain machines create \
   --output json
 ```
 
-The machine must run TLS itself. For direct IPv6 HTTPS, use a Let's Encrypt IP certificate for the machine IPv6 literal. Domain certificates do not validate for `https://[<ipv6>]` unless the certificate includes that IP address.
+The machine must run TLS itself. For direct IPv6 HTTPS, use the `enabling-https` skill. Domain certificates do not validate for `https://[<ipv6>]` unless the certificate includes that IP address as an IP SAN.
 
 Generic IPv6 HTTPS flow:
 
 1. Stop anything already using port 80.
-2. Use any ACME client that supports Let's Encrypt IP certificates and IPv6 HTTP-01 validation.
-3. Request the certificate for the machine IPv6 literal with Let's Encrypt's `shortlived` profile; one working ACME client pattern is standalone HTTP-01 over IPv6 with `--listen-v6`, `--cert-profile shortlived`, and `-d <machine-ipv6>`.
-4. Install `fullchain.pem` and `key.pem` into any HTTPS-capable server: nginx, Apache, Envoy, HAProxy, or the application's own TLS listener.
-5. Configure the server to present the IP certificate as the default certificate for `:443`, because many clients omit SNI for IP-literal URLs.
-6. Verify from outside Layerbrain with `curl -v https://[<machine-ipv6>]`.
+2. Run the app on localhost, for example `127.0.0.1:3000`.
+3. Serve HTTP-01 challenge files on public port `80`.
+4. Use Certbot 5.4 or newer with `--ip-address <machine-ipv6>` and `--preferred-profile shortlived`.
+5. Install `/etc/letsencrypt/live/<machine-ipv6>/fullchain.pem` and `privkey.pem` into any HTTPS-capable server: Caddy, Nginx, Apache, Envoy, HAProxy, or the application's own TLS listener.
+6. Configure the server to present the IP certificate as the default certificate for `:443`, because many clients omit SNI for IP-literal URLs.
+7. Keep renewal running and reload the TLS server after renewal.
+8. Verify from outside Layerbrain with `curl -g -v https://[<machine-ipv6>]/` and `openssl s_client -verify_ip <machine-ipv6>`.
 
 ## Timeout behavior
 

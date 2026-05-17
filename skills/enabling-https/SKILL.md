@@ -1,11 +1,29 @@
 ---
 name: enabling-https
-description: Use when the user wants to enable HTTPS for a Layerbrain machine's public IPv6 address. Requires the official `brain` CLI.
+description: Use when the user wants browser-valid HTTPS/TLS for a Layerbrain machine's public IPv6 address using Let's Encrypt IP certificates. Requires the official `brain` CLI.
 ---
 
 # Enable HTTPS on a Layerbrain machine
 
-Use this skill when a user asks for HTTPS, TLS, Let's Encrypt, Certbot, Caddy, or an HTTPS demo on a Layerbrain machine.
+Use this skill when a user asks for HTTPS, TLS, SSL, Let's Encrypt, Certbot, Caddy, Nginx, reverse proxy, or an HTTPS demo on a Layerbrain machine.
+
+## Canonical path
+
+For a Layerbrain machine reached as `https://[<public_ipv6>]`, do this exact flow:
+
+1. Create the machine with public ports `80,443`. Public ports are create-time firewall rules; if the machine was not created with both ports, create a replacement.
+2. Run the app on localhost inside the machine, for example `127.0.0.1:3000`.
+3. Serve HTTP-01 challenge files on public port `80`.
+4. Use Certbot 5.4 or newer to request a Let's Encrypt IP certificate with `--ip-address <public_ipv6>` and `--preferred-profile shortlived`.
+5. Configure a TLS server on public port `443` to load the issued `fullchain.pem` and `privkey.pem`, then reverse proxy to the local app.
+6. Schedule renewal because Let's Encrypt IP certificates are short-lived, currently about six days.
+7. Verify externally with `curl -g https://[<public_ipv6>]/` and `openssl s_client -verify_ip <public_ipv6>`.
+
+Do not use a domain certificate for `https://[<ipv6>]`; browsers require a certificate SAN containing `IP Address:<public_ipv6>`.
+
+Do not use DNS-01 for IP certificates. Let's Encrypt IP address certificates use HTTP-01 or TLS-ALPN-01 validation and require the `shortlived` profile.
+
+Caddy is only the example HTTP challenge server and TLS reverse proxy below. Nginx, HAProxy, Envoy, Apache, or the app's own TLS listener are also valid if they serve `/.well-known/acme-challenge/*` on `:80`, present the IP SAN certificate as the default cert on `:443`, and reload after renewal.
 
 ## Preflight
 
@@ -21,7 +39,7 @@ For direct IPv6 HTTPS:
 2. The app can listen locally, for example `127.0.0.1:3000`.
 3. A TLS server inside the machine owns ports `80` and `443`.
 4. Let's Encrypt HTTP-01 validation reaches the machine on port `80`.
-5. The TLS server presents a certificate whose SAN contains the machine IPv6 address.
+5. The TLS server presents a certificate whose SAN contains `IP Address:<public_ipv6>`.
 
 ## Stateless states
 
@@ -30,8 +48,8 @@ Track the work in these states:
 1. `machine_ready`: machine is active, has `public_ipv6`, and was created with `--ports 80,443`.
 2. `app_ready`: app responds inside the machine, for example `curl http://127.0.0.1:3000/`.
 3. `challenge_ready`: port `80` serves `/.well-known/acme-challenge/*` from a webroot.
-4. `cert_issued`: Certbot has issued a Let's Encrypt IP certificate with the `shortlived` profile.
-5. `https_ready`: TLS server on `:443` loads the issued cert and forwards to the app.
+4. `cert_issued`: Certbot has issued a Let's Encrypt IP certificate with `--ip-address <public_ipv6>` and the `shortlived` profile.
+5. `https_ready`: TLS server on `:443` loads the issued cert as the default certificate and forwards to the app.
 6. `renewal_ready`: `certbot renew` is scheduled and reloads the TLS server after renewal.
 7. `verified`: external `curl https://[<public_ipv6>]/` returns the app.
 
@@ -74,7 +92,7 @@ curl -fsS http://127.0.0.1:3000/
 
 ## Prepare HTTP-01 validation
 
-Certbot webroot mode needs something serving `$ACME_ROOT/.well-known/acme-challenge/*` on port `80`. Caddy is a convenient example for that state:
+Certbot webroot mode needs something serving `$ACME_ROOT/.well-known/acme-challenge/*` on public port `80`. Caddy is a convenient example for that state. Keep Caddy automatic HTTPS disabled here; Certbot issues the IP certificate, and Caddy only serves challenge files and later loads the issued certificate.
 
 ```bash
 brain machines exec --timeout 600 <MACHINE_ID> bash -lc '
@@ -118,7 +136,12 @@ caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1 |
 
 ## Issue the IP certificate with Certbot
 
-Use Certbot 5.4 or newer because IP address certificates require `--ip-address`.
+Use Certbot 5.4 or newer because IP address certificates require `--ip-address`. The important parts are:
+
+- `--ip-address "$PUBLIC_IP"` puts the machine IPv6 literal into the certificate SAN as an IP address.
+- `--preferred-profile shortlived` requests the Let's Encrypt profile required for IP certificates while still allowing future-compatible fallback if the profile changes.
+- `--webroot --webroot-path "$ACME_ROOT"` proves control through HTTP-01 on port `80`.
+- `--cert-name "$PUBLIC_IP"` gives the cert a stable, predictable path under `/etc/letsencrypt/live/$PUBLIC_IP/`.
 
 ```bash
 brain machines exec --timeout 600 <MACHINE_ID> bash -lc '
@@ -148,11 +171,18 @@ certbot certonly \
 '
 ```
 
-Use `--staging` during rehearsals to avoid Let's Encrypt production rate limits. Remove it for the real receipt.
+Use `--staging` during rehearsals to avoid Let's Encrypt production rate limits. Remove it for the real certificate.
 
 ## Enable HTTPS with Caddy
 
 Caddy is only an example. Nginx, HAProxy, Envoy, Apache, or the app's own TLS listener are also valid. This replaces the HTTP-only challenge config with HTTP challenge handling plus HTTPS on `:443`.
+
+Important requirements for any TLS server:
+
+- Listen on `:443` inside the machine; Layerbrain does not map external port `443` to a different internal port.
+- Present `/etc/letsencrypt/live/$PUBLIC_IP/fullchain.pem` and `/etc/letsencrypt/live/$PUBLIC_IP/privkey.pem` as the default certificate because many clients omit SNI for IP-literal URLs.
+- Keep `:80` serving the ACME webroot for renewals, then redirect or respond for all other paths.
+- Proxy to the app on localhost, not on a public app port.
 
 ```bash
 brain machines exec --timeout 600 <MACHINE_ID> bash -lc '
@@ -174,7 +204,7 @@ cat > /etc/caddy/Caddyfile <<CADDY
   }
 
   handle {
-    respond "Layerbrain HTTPS demo: https://[$PUBLIC_IP]/" 200
+    redir https://[$PUBLIC_IP]{uri} permanent
   }
 }
 
@@ -192,7 +222,7 @@ caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1 |
 
 ## Renewal
 
-Short-lived IP certificates expire in about six days. Renewal must be automatic.
+Short-lived IP certificates expire in about six days. Renewal must be automatic and must reload the TLS server after Certbot writes a renewed certificate.
 
 ```bash
 brain machines exec --timeout 60 <MACHINE_ID> bash -lc '
@@ -225,5 +255,8 @@ Successful verification shows the app response and a certificate with `IP Addres
 - Do not modify Layerbrain source repos to make a demo unless the user explicitly asks for code changes.
 - Keep the machine-side flow stateless: rerunning a state should either succeed or replace the same files.
 - Prefer `--timeout 60` for demo machines unless the user asks to keep them running.
+- If the machine was created without both ports `80` and `443`, create a replacement; public port rules are immutable.
+- Do not expose the app's development port publicly for HTTPS demos. Open only `80,443` and proxy from the TLS server to localhost.
+- Treat Certbot as the certificate issuer for IP literals. Use Caddy, Nginx, HAProxy, Envoy, Apache, or app TLS only to serve ACME HTTP-01 and present the issued cert.
 - If `brain machines exec` is interrupted locally, inspect the machine before retrying; the remote command may have completed.
 - Delete demo machines when the user no longer needs the live URL.

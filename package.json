@@ -1,6 +1,6 @@
 {
   "name": "@layerbrain/skills",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Layerbrain skills for AI coding agents. Install once, any agent (Claude Code, Codex, Cursor, Cline, Windsurf) learns to drive the `brain` CLI like a devops engineer drives AWS.",
   "type": "module",
   "bin": {
